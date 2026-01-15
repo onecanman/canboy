@@ -15,8 +15,8 @@ int main() {
   std::cout << "PC before clock = "
       << std::hex << gb.cpu.regs.pc << "\n";
 
-  for (int i = 0; i < 20; i++) {
-    gb.cpu.clock();
+  while (!gb.cpu.isHalted()) {
+      gb.cpu.step();
   }
 
   auto& r = gb.cpu.regs;

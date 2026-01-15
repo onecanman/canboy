@@ -14,6 +14,7 @@ public:
   void connectBus(Bus *b) { bus = b; }
   void importInstructionSet(instructionSet* is) { instSet = is; }
   Registers regs;
+  void step();
   void clock();
   void reset();
   uint8_t fetch();
@@ -22,6 +23,7 @@ public:
   uint8_t opcode = 0x00;
   bool serviceINT();
   void exec(uint8_t opcode);
+  bool isHalted() const { return HALT; }
 
 private:
   Bus *bus = nullptr;

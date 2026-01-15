@@ -43,6 +43,16 @@ void cpu::reset() {
   IMEPending = false;
 }
 
+void lr35902::step() {
+    if (HALT)
+        return;
+
+    do {
+        clock();
+    } while (cycles > 0 && !HALT);
+}
+
+
 void cpu::clock() {
   if (HALT) {
     uint8_t IF = read(0xFF0F);
@@ -104,8 +114,8 @@ bool cpu::serviceINT() {
   } else if ((pending >> 3) & 1) {
     // serial
     write(0xFF0F, IF &= ~(1 << 3));
-    regs.pc = 0x0058;
     instSet->push(regs.pc);
+    regs.pc = 0x0058;
   } else if ((pending >> 4) & 1) {
     // joypad
     write(0xFF0F, IF &= ~(1 << 4));

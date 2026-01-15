@@ -740,7 +740,7 @@ void instructionSet::sub(uint8_t val){
   uint16_t res = cpu->regs.a - val;
   cpu->regs.setFlag(Registers::Z, (res & 0xFF) == 0);
   cpu->regs.setFlag(Registers::N, true);
-  cpu->regs.setFlag(Registers::H, ((a ^ val ^ res) >> 3) & 1);
+  cpu->regs.setFlag(Registers::H, (a & 0x0F) < (val & 0x0F));
   cpu->regs.setFlag(Registers::C, a < val);
   cpu->regs.a = static_cast<uint8_t>(res);
 }

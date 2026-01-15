@@ -26,6 +26,7 @@ void instructionSet::decode(uint8_t opcode) {
             case 2: // 0x10 STOP
                 cpu->fetch();
                 cpu->STOP = true;
+                cpu->cycles = 0;
                 break;
             case 3: { // 0x18 JR e8
                 int8_t e8 = cpu->fetch();
@@ -219,7 +220,15 @@ void instructionSet::decode(uint8_t opcode) {
     }
     case 1: { // LD r[y], r[z]    x = 1
         if (y == 6 && z == 6) {
-            cpu->HALT = true;
+            uint8_t IE = cpu->read(0xFFFF);
+            uint8_t IF = cpu->read(0xFF0F);
+            if (!cpu->IME && (IE & IF) != 0) {
+                cpu->haltBug = true;
+                cpu->HALT = false;
+            }
+            else {
+                cpu->HALT = true;
+            }
             cpu->cycles = 0;
         }
         else if (y == 6) {

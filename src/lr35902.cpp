@@ -24,7 +24,11 @@ cpu::~lr35902() { delete instSet; }
 
 uint8_t cpu::fetch() {
   fetched = read(regs.pc);
-  regs.pc++;
+  if (haltBug) {
+      haltBug = false;
+  } else {
+      regs.pc++;
+  }
   return fetched;
 }
 
@@ -55,7 +59,6 @@ void lr35902::step() {
     if (HALT) {
         return;
     }
-
 
     do {
         clock();

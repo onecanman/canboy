@@ -33,6 +33,7 @@ private:
   uint8_t* r8[8] = { &regs.b, &regs.c, &regs.d, &regs.e, &regs.h, &regs.l, nullptr, &regs.a };
   uint16_t* r16[4] = { &regs.bc, &regs.de, &regs.hl, &regs.sp };
   bool HALT = false;
+  bool haltBug = false;
   bool STOP = false;
   bool IME = false;
   bool delayedIME = false;

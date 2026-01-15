@@ -1,0 +1,37 @@
+#pragma once
+#include "instructions.h"
+#include "registers.h"
+#include <cstdint>
+
+class Bus;
+
+class lr35902 {
+  friend class instructionSet;
+
+public:
+  explicit lr35902(Bus *b);
+  ~lr35902();
+  void connectBus(Bus *b) { bus = b; }
+  void importInstructionSet(instructionSet* is) { instSet = is; }
+  Registers regs;
+  void clock();
+  void reset();
+  uint8_t fetch();
+  uint8_t fetched = 0x00;
+  uint8_t cycles = 0;
+  uint8_t opcode = 0x00;
+  bool serviceINT();
+  void exec(uint8_t opcode);
+
+private:
+  Bus *bus = nullptr;
+  instructionSet *instSet;
+  uint8_t* r8[8] = { &regs.b, &regs.c, &regs.d, &regs.e, &regs.h, &regs.l, nullptr, &regs.a };
+  uint16_t* r16[4] = { &regs.bc, &regs.de, &regs.hl, &regs.sp };
+  bool HALT = false;
+  bool STOP = false;
+  bool IME = false;
+  bool IMEPending = false;
+  void write(uint16_t a, uint8_t d);
+  uint8_t read(uint16_t a);
+};

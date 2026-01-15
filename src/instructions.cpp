@@ -24,8 +24,8 @@ void instructionSet::decode(uint8_t opcode) {
                 break;
             }
             case 2: // 0x10 STOP
-                cpu->fetch();
                 cpu->STOP = true;
+                cpu->regs.pc++;
                 cpu->cycles = 0;
                 break;
             case 3: { // 0x18 JR e8

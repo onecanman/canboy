@@ -56,6 +56,16 @@ void lr35902::step() {
     if ((cycles == 0) && serviceINT())
         return;
 
+    if (STOP) {
+        uint8_t IE = read(0xFFFF);
+        uint8_t IF = read(0xFF0F);
+        if (IE & IF) {
+            STOP = false;
+        }
+        return;
+    }
+
+
     if (HALT) {
         return;
     }
@@ -90,6 +100,7 @@ bool cpu::serviceINT() {
   if ((IE & IF) == 0) {
     return false;
   } // interrupt pending after this
+  STOP = false;
   if (HALT) {
       HALT = false;
       if (!IME) {

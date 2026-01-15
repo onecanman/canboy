@@ -24,6 +24,8 @@ public:
   bool serviceINT();
   void exec(uint8_t opcode);
   bool isHalted() const { return HALT; }
+  bool checkIME() const { return IME; }
+
 
 private:
   Bus *bus = nullptr;
@@ -33,7 +35,7 @@ private:
   bool HALT = false;
   bool STOP = false;
   bool IME = false;
-  bool IMEPending = false;
+  bool delayedIME = false;
   void write(uint16_t a, uint8_t d);
   uint8_t read(uint16_t a);
 };

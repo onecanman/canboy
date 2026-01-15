@@ -40,30 +40,31 @@ void cpu::reset() {
   HALT = false;
   STOP = false;
   IME = false;
-  IMEPending = false;
+  delayedIME = false;
 }
 
 void lr35902::step() {
-    if (HALT)
+    if (delayedIME) {
+        IME = true;
+        delayedIME = false;
+    }
+
+    if ((cycles == 0) && serviceINT())
         return;
+
+    if (HALT) {
+        return;
+    }
+
 
     do {
         clock();
-    } while (cycles > 0 && !HALT);
+    } while (cycles > 0);
+
 }
 
 
 void cpu::clock() {
-  if (HALT) {
-    uint8_t IF = read(0xFF0F);
-    if (IF != 0) {
-      HALT = false;
-    }
-    return;
-  }
-
-  if (serviceINT())
-      return;
 
 
   if (cycles == 0) {
@@ -73,10 +74,6 @@ void cpu::clock() {
 
   if (cycles > 0) cycles--;
 
-  if (IMEPending) {
-    IME = true;
-    IMEPending = false;
-  }
 }
 
 void cpu::exec(uint8_t opcode) {
@@ -85,40 +82,54 @@ void cpu::exec(uint8_t opcode) {
 }
 
 bool cpu::serviceINT() {
-  if (!IME) {
-    return false;
-  }
   uint8_t IE = read(0xFFFF);
   uint8_t IF = read(0xFF0F);
   if ((IE & IF) == 0) {
     return false;
+  } // interrupt pending after this
+  if (HALT) {
+      HALT = false;
+      if (!IME) {
+          return true;
+      }
   }
+  if (!IME) return false;
+  // service the interrupt
   IME = false;
-  HALT = false;
   uint8_t pending = IE & IF;
   if (pending & 1) {
     // vblank
-    write(0xFF0F, IF &= ~(1));
+    uint8_t iflags = read(0xFF0F);
+    iflags &= ~(1);
+    write(0xFF0F, iflags);
     instSet->push(regs.pc);
     regs.pc = 0x0040;
   } else if ((pending >> 1) & 1) {
     // lcd
-    write(0xFF0F, IF &= ~(1 << 1));
+    uint8_t iflags = read(0xFF0F);
+    iflags &= ~(1 << 1);
+    write(0xFF0F, iflags);
     instSet->push(regs.pc);
     regs.pc = 0x0048;
   } else if ((pending >> 2) & 1) {
     // timer
-    write(0xFF0F, IF &= ~(1 << 2));
+    uint8_t iflags = read(0xFF0F);
+    iflags &= ~(1 << 2);
+    write(0xFF0F, iflags);
     instSet->push(regs.pc);
     regs.pc = 0x0050;
   } else if ((pending >> 3) & 1) {
     // serial
-    write(0xFF0F, IF &= ~(1 << 3));
+    int8_t iflags = read(0xFF0F);
+    iflags &= ~(1 << 3);
+    write(0xFF0F, iflags);
     instSet->push(regs.pc);
     regs.pc = 0x0058;
   } else if ((pending >> 4) & 1) {
     // joypad
-    write(0xFF0F, IF &= ~(1 << 4));
+    int8_t iflags = read(0xFF0F);
+    iflags &= ~(1 << 4);
+    write(0xFF0F, iflags);
     instSet->push(regs.pc);
     regs.pc = 0x0060;
   } else {

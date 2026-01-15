@@ -220,6 +220,7 @@ void instructionSet::decode(uint8_t opcode) {
     case 1: { // LD r[y], r[z]    x = 1
         if (y == 6 && z == 6) {
             cpu->HALT = true;
+            cpu->cycles = 0;
         }
         else if (y == 6) {
             cpu->write(cpu->regs.hl, *cpu->r8[z]);
@@ -394,11 +395,11 @@ void instructionSet::decode(uint8_t opcode) {
             case 6:
                 // DI
                 cpu->IME = false;
-                cpu->IMEPending = false;
+                cpu->delayedIME = false;
                 break;
             case 7:
                 // EI
-                cpu->IMEPending = true;
+                cpu->delayedIME = true;
                 break;
             default:
                 break;

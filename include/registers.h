@@ -25,25 +25,25 @@ public:
 
   union {
     struct {
-      uint8_t a, f; // accumulator and flag
+      uint8_t f, a; // accumulator and flag
     };
     uint16_t af;
   };
   union {
     struct {
-      uint8_t b, c;
+      uint8_t c, b;
     };
     uint16_t bc;
   };
   union {
     struct {
-      uint8_t d, e;
+      uint8_t e, d;
     };
     uint16_t de;
   };
   union {
     struct {
-      uint8_t h, l;
+      uint8_t l, h;
     };
     uint16_t hl;
   };

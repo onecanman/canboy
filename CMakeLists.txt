@@ -19,7 +19,7 @@ add_executable ( canboy
     src/lr35902.cpp
     src/instructions.cpp
     src/registers.cpp
- "include/Emu.h" "src/Emu.cpp")
+ "include/Emu.h" "src/Emu.cpp" "include/cartridge.h" "src/cartridge.cpp")
 
 target_include_directories(canboy PRIVATE
     ${CMAKE_SOURCE_DIR}/include

@@ -8,7 +8,7 @@ public:
   Bus();
   ~Bus();
 
-public: 
+private: 
   std::array<uint8_t, 0x2000> VRAM; // 8000
   std::array<uint8_t, 0x2000> WRAM; // C000
   std::array<uint8_t, 0x00A0> OAM;  // FE00

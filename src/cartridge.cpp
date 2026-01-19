@@ -1,6 +1,6 @@
 #include "cartridge.h"
 
-Cartridge::read(uint16_t addr) {
+uint8_t Cartridge::read(uint16_t addr) {
 	if (addr < 0x8000) {
 		return ROM[addr - 0x0000];
 	}
@@ -9,6 +9,6 @@ Cartridge::read(uint16_t addr) {
 	}
 }
 
-Cartridge::write(uint16_t addr, uint8_t val) {
+void Cartridge::write(uint16_t addr, uint8_t val) {
 	RAM[addr - 0xA000] = val;
 }

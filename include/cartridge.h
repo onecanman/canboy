@@ -1,4 +1,4 @@
-
+#include <vector>
 
 class Cartridge {
 private:

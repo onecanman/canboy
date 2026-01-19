@@ -3,12 +3,15 @@
 #include <array>
 #include <cstdint>
 
+class Cartridge;
+
 class Bus {
 public:
-  Bus();
-  ~Bus();
+	Bus();
+	~Bus();
 
 private: 
+	Cartridge* cart = nullptr;
   std::array<uint8_t, 0x2000> VRAM; // 8000
   std::array<uint8_t, 0x2000> WRAM; // C000
   std::array<uint8_t, 0x00A0> OAM;  // FE00
@@ -19,4 +22,5 @@ private:
 public:
   void write(uint16_t addr, uint8_t data);
   uint8_t read(uint16_t addr);
+  void attachCart(Cartridge *c);
 };

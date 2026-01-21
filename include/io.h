@@ -11,7 +11,16 @@ class IO {
 	uint8_t TAC;
 
 public:
+	enum class INT {
+		VBlank,
+		LCDStat,
+		Timer,
+		Serial,
+		Joypad
+	};
+
+public:
 	uint8_t read(uint16_t addr);
 	void write(uint16_t addr, uint8_t val);
-	void reqINT(uint8_t type);
+	void reqINT(INT type);
 };

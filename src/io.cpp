@@ -48,3 +48,6 @@ void IO::write(uint16_t addr, uint8_t val) {
 	}
 }
 
+void IO::reqINT(INT type) {
+	IF |= (1 << static_cast<int>(type));
+}

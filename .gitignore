@@ -14,6 +14,8 @@ CMakeFiles/
 CMakeCache.txt
 cmake_install.cmake
 CTestTestfile.cmake
+CMakeUserPresets.json
+
 
 Debug/
 Release/

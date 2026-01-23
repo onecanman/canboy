@@ -1,4 +1,6 @@
-#pragma once
+#pragma 
+#include <functional>
+#include <vector>
 #include "instructions.h"
 #include "registers.h"
 #include <cstdint>
@@ -25,7 +27,7 @@ public:
   void exec(uint8_t opcode);
   bool isHalted() const { return HALT; }
   bool checkIME() const { return IME; }
-
+  void addListener(std::function<void()>);
 
 private:
   Bus *bus = nullptr;
@@ -37,6 +39,7 @@ private:
   bool STOP = false;
   bool IME = false;
   bool delayedIME = false;
+  std::vector<std::function<void()>> pulse;
   void write(uint16_t a, uint8_t d);
   uint8_t read(uint16_t a);
 };

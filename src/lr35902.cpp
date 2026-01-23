@@ -86,7 +86,9 @@ void cpu::clock() {
   }
 
   if (cycles > 0) cycles--;
-
+  for (auto &pulse : clockCallback) {
+      pulse();
+  }
 }
 
 void cpu::exec(uint8_t opcode) {
@@ -150,4 +152,8 @@ bool cpu::serviceINT() {
     return false;
   }
   return true;
+}
+
+void cpu::addListener(std::function<void()> x) {
+    clockCallback.push_back(x);
 }

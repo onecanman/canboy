@@ -27,7 +27,7 @@ public:
   void exec(uint8_t opcode);
   bool isHalted() const { return HALT; }
   bool checkIME() const { return IME; }
-  void addListener(std::function<void()>);
+  void addListener(std::function<void()> x);
 
 private:
   Bus *bus = nullptr;
@@ -39,7 +39,7 @@ private:
   bool STOP = false;
   bool IME = false;
   bool delayedIME = false;
-  std::vector<std::function<void()>> pulse;
+  std::vector<std::function<void()>> clockCallback;
   void write(uint16_t a, uint8_t d);
   uint8_t read(uint16_t a);
 };

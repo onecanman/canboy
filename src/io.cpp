@@ -51,3 +51,23 @@ void IO::write(uint16_t addr, uint8_t val) {
 void IO::reqINT(INT type) {
 	IF |= (1 << static_cast<int>(type));
 }
+
+void IO::setDIV(uint8_t val) {
+	DIV = val;
+}
+
+uint8_t IO::readTIMA() {
+	return TIMA;
+}
+
+void IO::setTIMA(uint8_t val) {
+	TIMA = val;
+}
+
+uint8_t IO::readTMA() {
+	return TMA;
+}
+
+uint8_t IO::readTAC() {
+	return TAC;
+}

@@ -3,10 +3,10 @@
 IO::IO() {
 	IF = 0;
 	JOYP = 0xFF;
-	DIV = 0;
 	TIMA = 0;
 	TMA = 0;
 	TAC = 0;
+	DIV = 0;
 }
 
 IO::~IO() {};
@@ -32,7 +32,7 @@ void IO::write(uint16_t addr, uint8_t val) {
 		JOYP = val;
 		break;
 	case 0xFF04:
-		DIV = 0;
+		divWrite = true;
 		break;
 	case 0xFF05:
 	    TIMA = val;
@@ -52,10 +52,6 @@ void IO::reqINT(INT type) {
 	IF |= (1 << static_cast<int>(type));
 }
 
-void IO::setDIV(uint8_t val) {
-	DIV = val;
-}
-
 uint8_t IO::readTIMA() {
 	return TIMA;
 }
@@ -70,4 +66,8 @@ uint8_t IO::readTMA() {
 
 uint8_t IO::readTAC() {
 	return TAC;
+}
+
+void IO::setDIV(uint8_t val) {
+	DIV = val;
 }

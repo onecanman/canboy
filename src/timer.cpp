@@ -2,14 +2,18 @@
 
 
 void Timer::tick() {
-	divider++;
-	io.setDIV((divider >> 8));
+	if (io.divWrite) {
+		divider = 0;
+		prevClockBit = 0;
+		io.setDIV(0);
+		io.divWrite = false;
+	}
 
 	uint8_t tacVal = io.readTAC();
 	bool timerEnabled = (tacVal >> 2) & 1;
 	uint8_t selectBits = tacVal & 3;
 
-	uint8_t clockBit;
+	uint8_t clockBit {};
 	switch (selectBits) {
 	case 0b00: clockBit = 9; break;
 	case 0b01: clockBit = 3; break;
@@ -17,8 +21,12 @@ void Timer::tick() {
 	case 0b11: clockBit = 7; break;
 	}
 
-	bool currentClockBit = (divider >> clockBit) & 1;
-	if (prevClockBit == 1 && currentClockBit == 0 && timerEnabled) {
+	bool oldClockSignal = timerEnabled ? ((divider >> clockBit) & 1) : 0;
+	divider++;
+	io.setDIV((divider >> 8));
+	bool newClockSignal = timerEnabled ? ((divider >> clockBit) & 1) : 0;
+
+	if (oldClockSignal && !newClockSignal) {
 		uint8_t timaVal = io.readTIMA();
 		if (timaVal == 0xFF) {
 			io.setTIMA(io.readTMA());
@@ -30,5 +38,6 @@ void Timer::tick() {
 		}
 	}
 
-	prevClockBit = currentClockBit;
+	prevClockBit = newClockSignal;
 }
+

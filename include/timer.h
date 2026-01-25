@@ -10,5 +10,5 @@ public:
 private:
 	IO& io;
 	uint16_t divider {};
-	bool prevClockBit {};
+	bool prevClockBit = false;
 };

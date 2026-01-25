@@ -9,10 +9,13 @@ int main() {
     gb.cpu.regs.sp = 0xFFFE;
     gb.cart.loadGame("../../../src/test.gb");
     gb.bus.attachCart(&gb.cart);
-    
+    gb.bus.attachIO(&gb.io);
+
     std::cout << "PC before clock = "
         << std::hex << gb.cpu.regs.pc << "\n";
 
+
+    /*
 
     while (!gb.cpu.isHalted()) {
         uint16_t pc = gb.cpu.regs.pc;
@@ -37,6 +40,41 @@ int main() {
                 << "\n";
         }
     }
+
+    for (int i = 0; i < 350000; i++) {
+        gb.cpu.clock();
+        if (i % 50000 == 0) {
+            uint8_t div = gb.io.read(0xFF04);
+            uint8_t tima = gb.io.read(0xFF05);
+            uint8_t tma = gb.io.read(0xFF06);
+            uint8_t tac = gb.io.read(0xFF07);
+            uint8_t ifr = gb.io.read(0xFF0F);
+
+            printf(
+                "i=%d HALT=%d DIV=%02X TIMA=%02X TMA=%02X TAC=%02X IF=%02X\n",
+                i,
+                gb.cpu.isHalted(),
+                div,
+                tima,
+                tma,
+                tac,
+                ifr
+            );
+        }
+    }
+
+    */
+
+    uint8_t div = gb.bus.read(0xFF04);
+    uint8_t tima = gb.bus.read(0xFF05);
+    uint8_t ifr = gb.bus.read(0xFF0F);
+
+    std::cout << std::hex
+        << "DIV=" << (int)div
+        << " TIMA=" << (int)tima
+        << " IF=" << (int)ifr
+        << "\n";
+
 
     auto& r = gb.cpu.regs;
 

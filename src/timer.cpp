@@ -21,12 +21,11 @@ void Timer::tick() {
 	case 0b11: clockBit = 7; break;
 	}
 
-	bool oldClockSignal = timerEnabled ? ((divider >> clockBit) & 1) : 0;
 	divider++;
 	io.setDIV((divider >> 8));
 	bool newClockSignal = timerEnabled ? ((divider >> clockBit) & 1) : 0;
 
-	if (oldClockSignal && !newClockSignal) {
+	if (prevClockBit && !newClockSignal) {
 		uint8_t timaVal = io.readTIMA();
 		if (timaVal == 0xFF) {
 			io.setTIMA(io.readTMA());

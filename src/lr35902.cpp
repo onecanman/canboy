@@ -69,6 +69,8 @@ void cpu::clock() {
         if (cycles == 0 && !HALT) {
             opcode = fetch();
             exec(opcode);
+        } else if (cycles == 0 && HALT) {
+            cycles = 1;
         }
         if (cycles > 0) cycles--;
     }

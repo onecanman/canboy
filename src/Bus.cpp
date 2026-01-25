@@ -1,5 +1,6 @@
 #include "Bus.h"
 #include "cartridge.h"
+#include "io.h"
 #include <cassert>
 
 Bus::Bus() {}
@@ -18,7 +19,7 @@ void Bus::write(uint16_t addr, uint8_t data) {
     else if (addr >= 0xE000 && addr <= 0xFDFF) WRAM[addr - 0xE000] = data;
     else if (addr >= 0xFE00 && addr <= 0xFE9F) OAM[addr - 0xFE00] = data;
     else if (addr >= 0xFEA0 && addr <= 0xFEFF); // not usable
-    else if (addr >= 0xFF00 && addr <= 0xFF7F) IO[addr - 0xFF00] = data;
+    else if (addr >= 0xFF00 && addr <= 0xFF7F) io->write(addr, data);
     else if (addr >= 0xFF80 && addr <= 0xFFFE) HRAM[addr - 0xFF80] = data;
     else if (addr == 0xFFFF) IE = data;
     else;
@@ -36,7 +37,7 @@ uint8_t Bus::read(uint16_t addr) {
     else if (addr >= 0xE000 && addr <= 0xFDFF) return WRAM[addr - 0xE000]; // echo ram
     else if (addr >= 0xFE00 && addr <= 0xFE9F) return OAM[addr - 0xFE00]; // oam
     else if (addr >= 0xFEA0 && addr <= 0xFEFF) return 0xFF; // not usable
-    else if (addr >= 0xFF00 && addr <= 0xFF7F) return IO[addr - 0xFF00]; // io
+    else if (addr >= 0xFF00 && addr <= 0xFF7F) return io->read(addr); // io
     else if (addr >= 0xFF80 && addr <= 0xFFFE) return HRAM[addr - 0xFF80]; // hram
     else if (addr == 0xFFFF) return IE;
     else return 0xFF;
@@ -44,4 +45,8 @@ uint8_t Bus::read(uint16_t addr) {
 
 void Bus::attachCart(Cartridge* c) {
     cart = c;
+}
+
+void Bus::attachIO(IO* i) {
+    io = i;
 }

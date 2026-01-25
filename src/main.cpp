@@ -21,7 +21,21 @@ int main() {
         std::cout << "PC=" << std::hex << pc
             << " OP=" << (int)op << "\n";
 
-        gb.cpu.step();
+        gb.cpu.clock();
+
+        static int stepCount = 0;
+        if ((++stepCount % 1000) == 0) {
+            uint8_t div = gb.bus.read(0xFF04);
+            uint8_t tima = gb.bus.read(0xFF05);
+            uint8_t ifr = gb.bus.read(0xFF0F);
+
+            std::cout << std::hex
+                << "STEP=" << stepCount
+                << " DIV=" << (int)div
+                << " TIMA=" << (int)tima
+                << " IF=" << (int)ifr
+                << "\n";
+        }
     }
 
     auto& r = gb.cpu.regs;

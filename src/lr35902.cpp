@@ -47,14 +47,12 @@ void cpu::reset() {
   delayedIME = false;
 }
 
-void lr35902::step() {
+void cpu::clock() {  
+    bool earlyExit = false;
     if (delayedIME) {
         IME = true;
         delayedIME = false;
     }
-
-    if ((cycles == 0) && serviceINT())
-        return;
 
     if (STOP) {
         uint8_t IE = read(0xFFFF);
@@ -62,33 +60,20 @@ void lr35902::step() {
         if (IE & IF) {
             STOP = false;
         }
-        return;
+        earlyExit = true;
+    } else if ((cycles == 0) && serviceINT()) {
+        earlyExit = true;
     }
 
-
-    if (HALT) {
-        return;
+    if (!earlyExit) {
+        if (cycles == 0 && !HALT) {
+            opcode = fetch();
+            exec(opcode);
+        }
+        if (cycles > 0) cycles--;
     }
 
-    do {
-        clock();
-    } while (cycles > 0);
-
-}
-
-
-void cpu::clock() {
-
-
-  if (cycles == 0) {
-    opcode = fetch();
-    exec(opcode);
-  }
-
-  if (cycles > 0) cycles--;
-  for (auto &pulse : clockCallback) {
-      pulse();
-  }
+    for (auto& pulse : clockCallback) pulse();
 }
 
 void cpu::exec(uint8_t opcode) {

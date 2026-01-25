@@ -1,4 +1,4 @@
-#pragma 
+#pragma once
 #include <functional>
 #include <vector>
 #include "instructions.h"

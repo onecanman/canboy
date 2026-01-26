@@ -3,6 +3,7 @@
 
 class Cartridge {
 private:
+	size_t romSize = 0;
 	std::vector<uint8_t> ROM;
 	std::vector<uint8_t> RAM {};
 public:

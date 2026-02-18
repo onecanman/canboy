@@ -48,34 +48,44 @@ void cpu::reset() {
 }
 
 void cpu::clock() {  
-    bool earlyExit = false;
-    if (delayedIME) {
-        IME = true;
-        delayedIME = false;
-    }
-
+    bool instrCompleted = false;
     if (STOP) {
         uint8_t IE = read(0xFFFF);
         uint8_t IF = read(0xFF0F);
-        if (IE & IF) {
-            STOP = false;
-        }
-        earlyExit = true;
-    } else if ((cycles == 0) && serviceINT()) {
-        earlyExit = true;
+        if (IE & IF) STOP = false;
+        for (auto& pulse : clockCallback) pulse();
+        return;
     }
-
-    if (!earlyExit) {
+    if (cycles > 0) {
+        cycles--;
         if (cycles == 0 && !HALT) {
+            instrCompleted = true;
+        }
+    }
+    if (instrCompleted) {
+        if (imePending) {
+            if (imeSkip) {
+                imeSkip = false;
+            } else {
+                IME = true;
+                imePending = false;
+            }
+        }
+        if (serviceINT()) {
+            for (auto& pulse : clockCallback) pulse();
+            return;
+        }
+    }
+    if (cycles == 0) {
+        if (!HALT) {
             opcode = fetch();
             exec(opcode);
-        } else if (cycles == 0 && HALT) {
+        } else {
             cycles = 1;
         }
-        if (cycles > 0) cycles--;
     }
-
-    for (auto& pulse : clockCallback) pulse();
+    for (auto& pulse : clockCallback)
+        pulse();
 }
 
 void cpu::exec(uint8_t opcode) {
@@ -93,12 +103,13 @@ bool cpu::serviceINT() {
   if (HALT) {
       HALT = false;
       if (!IME) {
-          return true;
+          return false;
       }
   }
   if (!IME) return false;
   // service the interrupt
   IME = false;
+  imePending = false;
   uint8_t pending = IE & IF;
   if (pending & 1) {
     // vblank

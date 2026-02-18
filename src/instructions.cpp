@@ -404,11 +404,13 @@ void instructionSet::decode(uint8_t opcode) {
             case 6:
                 // DI
                 cpu->IME = false;
-                cpu->delayedIME = false;
+                cpu->imePending = false;
+                cpu->imeSkip = false;
                 break;
             case 7:
                 // EI
-                cpu->delayedIME = true;
+                cpu->imePending = true;
+                cpu->imeSkip = true;
                 break;
             default:
                 break;

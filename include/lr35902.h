@@ -16,7 +16,6 @@ public:
   void connectBus(Bus *b) { bus = b; }
   void importInstructionSet(instructionSet* is) { instSet = is; }
   Registers regs;
-  void step();
   void clock();
   void reset();
   uint8_t fetch();
@@ -38,6 +37,8 @@ private:
   bool haltBug = false;
   bool STOP = false;
   bool IME = false;
+  bool imePending = false;
+  bool imeSkip = false;
   bool delayedIME = false;
   std::vector<std::function<void()>> clockCallback;
   void write(uint16_t a, uint8_t d);

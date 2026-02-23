@@ -19,6 +19,14 @@ uint8_t IO::read(uint16_t addr) {
 	case 0xFF05: return TIMA; break;
 	case 0xFF06: return TMA; break;
 	case 0xFF07: return TAC; break;
+	case 0xFF40: return LCDC; break;
+	case 0xFF41: return STAT; break;
+	case 0xFF42: return SCY; break;
+	case 0xFF43: return SCX; break;
+	case 0xFF44: return LY; break;
+	case 0xFF45: return LYC; break;
+	case 0xFF4A: return WY; break;
+	case 0xFF4B: return WX; break;
 	default: return 0xFF;
 	}
 }
@@ -43,6 +51,11 @@ void IO::write(uint16_t addr, uint8_t val) {
 	case 0xFF07:
 		TAC = (val & 0x07);
 		break;
+	case 0xFF41:
+		STAT = (STAT & 0x07) | (val & 0x78); // 0x78 is 3-6 bits
+		break;
+	case 0xFF44:
+		LY = 0;
 	default:
 		break;
 	}
@@ -70,4 +83,8 @@ uint8_t IO::readTAC() {
 
 void IO::setDIV(uint8_t val) {
 	DIV = val;
+}
+
+void IO::setLY(uint8_t val) {
+
 }

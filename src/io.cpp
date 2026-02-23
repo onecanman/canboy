@@ -51,11 +51,30 @@ void IO::write(uint16_t addr, uint8_t val) {
 	case 0xFF07:
 		TAC = (val & 0x07);
 		break;
+	case 0xFF40:
+		LCDC = val;
+		break;
 	case 0xFF41:
 		STAT = (STAT & 0x07) | (val & 0x78); // 0x78 is 3-6 bits
 		break;
+	case 0xFF42:
+		SCY = val;
+		break;
+	case 0xFF43:
+		SCX = val;
+		break;
 	case 0xFF44:
 		LY = 0;
+		break;
+	case 0xFF45:
+		LYC = val;
+		break;
+	case 0xFF4A:
+		WY = val;
+		break;
+	case 0xFF4B:
+		WX = val;
+		break;
 	default:
 		break;
 	}
@@ -86,5 +105,22 @@ void IO::setDIV(uint8_t val) {
 }
 
 void IO::setLY(uint8_t val) {
+	LY = val;
+}
 
+uint8_t IO::readLYC() {
+	return LYC;
+}
+
+void IO::setSTATMode(uint8_t mode) {
+	STAT &= ~(0x03);
+	STAT |= (mode & 0x03);
+}
+
+void IO::setSTATFlag(bool eq) {
+	if (eq) {
+		STAT |= 0x04;
+	} else {
+		STAT &= ~(0x04);
+	}
 }

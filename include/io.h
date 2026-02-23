@@ -27,6 +27,9 @@ public:
 	bool divWrite = false;
 	// ppu functions
 	void setLY(uint8_t val);
+	uint8_t readLYC();
+	void setSTATMode(uint8_t mode);
+	void setSTATFlag(bool eq);
 
 private:
 	uint8_t IF;

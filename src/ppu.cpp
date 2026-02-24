@@ -1,6 +1,28 @@
 #include "ppu.h"
 
 void PPU::tick() {
+	uint8_t lcdc = io.readLCDC();
+	bit7 = lcdc & 0x80;
+	if (bit7Prev && !bit7) {
+		dotcount = 0;
+		ly = 0;
+		mode = 0;
+		io.setLY(0);
+		io.setSTATMode(0);
+		prevMatch = false;
+	}
+	if (!bit7Prev && bit7) {
+		dotcount = 0;
+		ly = 0;
+		mode = 2;
+		io.setLY(0);
+		io.setSTATMode(2);
+		prevMatch = false;
+	}
+	if (!bit7) {
+		bit7Prev = bit7;
+		return;
+	}
 	dotcount++;
 	if (dotcount == 456) {
 		dotcount = 0;
@@ -52,4 +74,5 @@ void PPU::tick() {
 		}
 	}
 	prevMatch = currentMatch;
+	bit7Prev = bit7;
 }

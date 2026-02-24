@@ -12,4 +12,6 @@ private:
 	uint8_t ly = 0;
 	uint8_t mode = 2;
 	bool prevMatch = false;
+	bool bit7Prev = true;
+	bool bit7 = true;
 };

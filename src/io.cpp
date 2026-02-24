@@ -112,13 +112,17 @@ uint8_t IO::readLYC() {
 	return LYC;
 }
 
+uint8_t IO::readSTAT() {
+	return STAT;
+}
+
 void IO::setSTATMode(uint8_t mode) {
 	STAT &= ~(0x03);
 	STAT |= (mode & 0x03);
 }
 
-void IO::setSTATFlag(bool eq) {
-	if (eq) {
+void IO::setSTATFlag(bool match) {
+	if (match) {
 		STAT |= 0x04;
 	} else {
 		STAT &= ~(0x04);

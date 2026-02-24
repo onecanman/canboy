@@ -28,8 +28,9 @@ public:
 	// ppu functions
 	void setLY(uint8_t val);
 	uint8_t readLYC();
+	uint8_t readSTAT();
 	void setSTATMode(uint8_t mode);
-	void setSTATFlag(bool eq);
+	void setSTATFlag(bool match);
 
 private:
 	uint8_t IF;

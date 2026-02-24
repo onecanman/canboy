@@ -23,14 +23,14 @@ private:
   uint16_t dmaSource = 0;
   uint16_t dmaTicks = 0;
   uint8_t dmaIndex = 0;
-  void startDMA(uint8_t val);
-  void tickDMA();
-  bool isDMAActive();
 
 public:
   void write(uint16_t addr, uint8_t data);
   uint8_t read(uint16_t addr);
   uint8_t dmaRead(uint16_t addr);
+  bool isDMAActive();
+  void startDMA(uint8_t val);
+  void tickDMA();
   void attachCart(Cartridge *c);
   void attachIO(IO* i);
 };

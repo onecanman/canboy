@@ -128,3 +128,7 @@ void IO::setSTATFlag(bool match) {
 		STAT &= ~(0x04);
 	}
 }
+
+uint8_t IO::readLCDC() {
+	return LCDC;
+}

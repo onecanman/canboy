@@ -31,6 +31,7 @@ public:
 	uint8_t readSTAT();
 	void setSTATMode(uint8_t mode);
 	void setSTATFlag(bool match);
+	uint8_t readLCDC();
 
 private:
 	uint8_t IF;

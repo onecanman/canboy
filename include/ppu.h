@@ -10,5 +10,5 @@ private:
 	IO& io;
 	int dotcount = 0;
 	uint8_t ly = 0;
-	uint8_t mode;
+	uint8_t mode = 0;
 };

@@ -4,6 +4,7 @@
 #include "cartridge.h"
 #include "io.h"
 #include "timer.h"
+#include "ppu.h"
 
 class Emu {
 public:
@@ -14,4 +15,5 @@ public:
 	Cartridge cart;
 	IO io;
 	Timer timer;
+	PPU ppu;
 };

@@ -48,6 +48,11 @@ void cpu::reset() {
 }
 
 void cpu::clock() {  
+    if (bus->isDMAActive()) {
+        bus->tickDMA();
+        for (auto& pulse : clockCallback) pulse();
+        return;
+    }
     bool instrCompleted = false;
     if (STOP) {
         uint8_t IE = read(0xFFFF);

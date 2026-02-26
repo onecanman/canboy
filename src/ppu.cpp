@@ -57,6 +57,10 @@ void PPU::tick() {
 	io.setSTATMode(mode);
 	stat = io.readSTAT();
 	if (mode != prevMode) {
+		if (prevMode == 2 && mode == 3) {
+			enterMode3();
+		}
+		// INT
 		if (mode == 0) {
 			if (stat & 0x08) {
 				io.reqINT(IO::INT::LCDStat);
@@ -73,6 +77,61 @@ void PPU::tick() {
 			}
 		}
 	}
+	if (mode == 3 && ly <= 143) {
+		if (xPixel < 160) {
+			framebuffer[ly * 160 + xPixel] = 0;
+			xPixel++;
+		}
+	}
 	prevMatch = currentMatch;
 	bit7Prev = bit7;
+}
+
+
+const std::array<uint8_t, 160 * 144>& PPU::getFrameBuffer() const {
+	return framebuffer;
+}
+
+void PPU::enterMode3() {
+	bgFIFO.clear();
+	state = FState::getTile;
+	fdotcounter = 0;
+	fetcherX = 0;
+	xPixel = 0;
+}
+
+void PPU::tickFetcher() {
+	switch (state) {
+	case FState::getTile:
+		fdotcounter++;
+		if (fdotcounter == 2) {
+			fdotcounter = 0;
+			state = FState::getLow;
+		}
+		break;
+	case FState::getLow:
+		fdotcounter++;
+		if (fdotcounter == 2) {
+			fdotcounter = 0;
+			state = FState::getHigh;
+		}
+		break;
+	case FState::getHigh:
+		fdotcounter++;
+		if (fdotcounter == 2) {
+			fdotcounter = 0;
+			state = FState::sleep;
+		}
+		break;
+	case FState::sleep:
+		fdotcounter++;
+		if (fdotcounter == 2) {
+			fdotcounter = 0;
+			state = FState::push;
+		}
+		break;
+	case FState::push:
+		state = FState::getTile;
+		break;
+	}
 }

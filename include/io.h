@@ -15,7 +15,19 @@ public:
 	};
 
 public:
+	enum class REG : uint16_t {
+		LCDC = 0xFF40,
+		STAT = 0xFF41,
+		SCY = 0xFF42,
+		SCX = 0xFF43,
+		LY = 0xFF44,
+		LYC = 0xFF45,
+		WY = 0xFF4A,
+		WX = 0xFF4B
+	};
+
 	uint8_t read(uint16_t addr);
+	uint8_t read(REG r) { return read(static_cast<uint16_t>(r)); }
 	void write(uint16_t addr, uint8_t val);
 	void reqINT(INT type);
 	// timer functions
@@ -27,11 +39,8 @@ public:
 	bool divWrite = false;
 	// ppu functions
 	void setLY(uint8_t val);
-	uint8_t readLYC();
-	uint8_t readSTAT();
 	void setSTATMode(uint8_t mode);
 	void setSTATFlag(bool match);
-	uint8_t readLCDC();
 
 private:
 	uint8_t IF;

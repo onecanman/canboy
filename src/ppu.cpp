@@ -1,7 +1,7 @@
 #include "ppu.h"
 
 void PPU::tick() {
-	uint8_t lcdc = io.readLCDC();
+	uint8_t lcdc = io.read(IO::REG::LCDC);
 	bit7 = lcdc & 0x80;
 	if (bit7Prev && !bit7) {
 		dotcount = 0;
@@ -37,7 +37,7 @@ void PPU::tick() {
 		}
 	}
 
-	bool currentMatch = (ly == io.readLYC());
+	bool currentMatch = (ly == io.read(IO::REG::LYC));
 	io.setSTATFlag(currentMatch);
 	uint8_t stat = io.readSTAT();
 	if (!prevMatch && currentMatch) {
@@ -55,7 +55,7 @@ void PPU::tick() {
 		mode = 1;
 	}
 	io.setSTATMode(mode);
-	stat = io.readSTAT();
+	stat = io.read(IO::REG::STAT);
 	if (mode != prevMode) {
 		if (prevMode == 2 && mode == 3) {
 			enterMode3();
@@ -78,10 +78,7 @@ void PPU::tick() {
 		}
 	}
 	if (mode == 3 && ly <= 143) {
-		if (xPixel < 160) {
-			framebuffer[ly * 160 + xPixel] = 0;
-			xPixel++;
-		}
+		tickFetcher();
 	}
 	prevMatch = currentMatch;
 	bit7Prev = bit7;

@@ -108,14 +108,6 @@ void IO::setLY(uint8_t val) {
 	LY = val;
 }
 
-uint8_t IO::readLYC() {
-	return LYC;
-}
-
-uint8_t IO::readSTAT() {
-	return STAT;
-}
-
 void IO::setSTATMode(uint8_t mode) {
 	STAT &= ~(0x03);
 	STAT |= (mode & 0x03);
@@ -127,8 +119,4 @@ void IO::setSTATFlag(bool match) {
 	} else {
 		STAT &= ~(0x04);
 	}
-}
-
-uint8_t IO::readLCDC() {
-	return LCDC;
 }

@@ -28,6 +28,8 @@ private:
 	FState state;
 	uint8_t fdotcounter;
 	uint8_t tileNo;
+	uint16_t tileBase;
+	uint8_t tileRow;
 	uint8_t tileLow;
 	uint8_t tileHigh;
 	uint8_t fetcherX;

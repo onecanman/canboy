@@ -13,8 +13,8 @@ void Bus::write(uint16_t addr, uint8_t data) {
         cart->write(addr, data);
     }
     else if (addr >= 0x8000 && addr <= 0x9FFF) { // vram
-        uint8_t stat = io->readSTAT();
-        uint8_t lcdc = io->readLCDC();
+        uint8_t stat = io->read(IO::REG::STAT);
+        uint8_t lcdc = io->read(IO::REG::LCDC);
         uint8_t mode = stat & 0x03;
         uint8_t ENlcd = lcdc & 0x80;
         if (ENlcd && mode == 3) return;
@@ -26,8 +26,8 @@ void Bus::write(uint16_t addr, uint8_t data) {
     } else if (addr >= 0xC000 && addr <= 0xDFFF) WRAM[addr - 0xC000] = data;
     else if (addr >= 0xE000 && addr <= 0xFDFF) WRAM[addr - 0xE000] = data;
     else if (addr >= 0xFE00 && addr <= 0xFE9F) { // oam
-        uint8_t stat = io->readSTAT();
-        uint8_t lcdc = io->readLCDC();
+        uint8_t stat = io->read(IO::REG::STAT);
+        uint8_t lcdc = io->read(IO::REG::LCDC);
         uint8_t mode = stat & 0x03;
         uint8_t ENlcd = lcdc & 0x80;
         if (ENlcd && (mode == 2 || mode == 3)) return;
@@ -47,8 +47,8 @@ uint8_t Bus::read(uint16_t addr) {
         return cart->read(addr); // rom
     }
     else if (addr >= 0x8000 && addr <= 0x9FFF) {  //vram
-        uint8_t stat = io->readSTAT();
-        uint8_t lcdc = io->readLCDC();
+        uint8_t stat = io->read(IO::REG::STAT);
+        uint8_t lcdc = io->read(IO::REG::LCDC);
         uint8_t mode = stat & 0x03;
         uint8_t ENlcd = lcdc & 0x80;
         if (ENlcd && mode == 3) return 0xFF;
@@ -61,8 +61,8 @@ uint8_t Bus::read(uint16_t addr) {
     else if (addr >= 0xC000 && addr <= 0xDFFF) return WRAM[addr - 0xC000]; // wram
     else if (addr >= 0xE000 && addr <= 0xFDFF) return WRAM[addr - 0xE000]; // echo ram
     else if (addr >= 0xFE00 && addr <= 0xFE9F) { //oam
-        uint8_t stat = io->readSTAT();
-        uint8_t lcdc = io->readLCDC();
+        uint8_t stat = io->read(IO::REG::STAT);
+        uint8_t lcdc = io->read(IO::REG::LCDC);
         uint8_t mode = stat & 0x03;
         uint8_t ENlcd = lcdc & 0x80;
         if (ENlcd && (mode == 2 || mode == 3)) return 0xFF;

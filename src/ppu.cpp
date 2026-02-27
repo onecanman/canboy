@@ -79,6 +79,12 @@ void PPU::tick() {
 	}
 	if (mode == 3 && ly <= 143) {
 		tickFetcher();
+		if (!bgFIFO.empty() && xPixel < 160) {
+			uint8_t color = bgFIFO.front();
+			bgFIFO.pop_front();
+			framebuffer[ly * 160 + xPixel] = color;
+			xPixel++;
+		}
 	}
 	prevMatch = currentMatch;
 	bit7Prev = bit7;

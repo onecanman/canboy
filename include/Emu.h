@@ -5,6 +5,7 @@
 #include "io.h"
 #include "timer.h"
 #include "ppu.h"
+#include "renderer.h"
 
 class Emu {
 public:
@@ -16,4 +17,7 @@ public:
 	IO io;
 	Timer timer;
 	PPU ppu;
+	Renderer r;
+	void run();
+	bool init();
 };

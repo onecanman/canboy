@@ -9,6 +9,10 @@ if (POLICY CMP0141)
   set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
 endif()
 
+set(CMAKE_TOOLCHAIN_FILE
+    "C:/Program Files/Microsoft Visual Studio/18/Community/VC/vcpkg/scripts/buildsystems/vcpkg.cmake"
+    CACHE STRING "")
+
 project ("canboy")
 
 # Add source to this project's executable.
@@ -19,7 +23,10 @@ add_executable ( canboy
     src/lr35902.cpp
     src/instructions.cpp
     src/registers.cpp
- "include/Emu.h" "src/Emu.cpp" "include/cartridge.h" "src/cartridge.cpp" "include/io.h" "src/io.cpp" "include/timer.h" "src/timer.cpp" "include/ppu.h" "src/ppu.cpp")
+ "include/Emu.h" "src/Emu.cpp" "include/cartridge.h" "src/cartridge.cpp" "include/io.h" "src/io.cpp" "include/timer.h" "src/timer.cpp" "include/ppu.h" "src/ppu.cpp" "include/renderer.h" "src/renderer.cpp")
+
+find_package(SDL3 CONFIG REQUIRED)
+target_link_libraries(canboy PRIVATE SDL3::SDL3)
 
 target_include_directories(canboy PRIVATE
     ${CMAKE_SOURCE_DIR}/include

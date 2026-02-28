@@ -42,6 +42,7 @@ void PPU::tick() {
 		if (wUsed) wLine++;
 		wUsed = false;
 		if (prevLY == 143 && ly == 144) {
+			frameReady = true;
 			io.reqINT(IO::INT::VBlank);
 		}
 	}
@@ -213,4 +214,12 @@ void PPU::tickFetcher() {
 		}
 		break;
 	}
+}
+
+bool PPU::isFrameReady() {
+	return frameReady;
+}
+
+void PPU::clrFrameFlag() {
+	frameReady = false;
 }

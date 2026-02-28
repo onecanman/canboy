@@ -7,7 +7,6 @@
 class PPU {
 public:
 	PPU(IO& io) : io(io) { io.setSTATMode(mode); }
-	void tick();
 private:
 	IO& io;
 	std::array<uint8_t, 160 * 144> framebuffer{};
@@ -26,6 +25,7 @@ private:
 		push
 	};
 	FState state;
+	bool frameReady = false;
 	uint8_t fdotcounter;
 	uint8_t tileNo;
 	uint16_t tileBase;
@@ -43,4 +43,7 @@ private:
 
 public:
 	const std::array<uint8_t, 160 * 144>& getFrameBuffer() const;
+	bool isFrameReady();
+	void clrFrameFlag();
+	void tick();
 };

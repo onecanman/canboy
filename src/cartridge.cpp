@@ -13,7 +13,9 @@ uint8_t Cartridge::read(uint16_t addr) {
 }
 
 void Cartridge::write(uint16_t addr, uint8_t val) {
-	RAM[addr - 0xA000] = val;
+	if (addr >= 0xA000 && addr <= 0xBFFF) {
+		RAM[addr - 0xA000] = val;
+	}
 }
 
 bool Cartridge::loadGame(const std::string& fname) {
@@ -28,7 +30,7 @@ bool Cartridge::loadGame(const std::string& fname) {
 
 	constexpr size_t ADDR_SPACE = 0x8000;
 
-	ROM.resize(ADDR_SPACE, 0x00);
+	ROM.resize(fileSize);
 	romSize = fileSize;
 	gbfile.read(reinterpret_cast<char*>(ROM.data()), fileSize);
 

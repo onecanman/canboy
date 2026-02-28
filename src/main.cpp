@@ -7,63 +7,20 @@ int main() {
 
     gb.cpu.regs.pc = 0x0000;
     gb.cpu.regs.sp = 0xFFFE;
-    gb.cart.loadGame("../../../src/test.gb");
+    gb.cart.loadGame("../../../../roms/Tetris (World) (Rev A).gb");
     gb.bus.attachCart(&gb.cart);
     gb.bus.attachIO(&gb.io);
 
     std::cout << "PC before clock = "
         << std::hex << gb.cpu.regs.pc << "\n";
 
-
-    /*
-
-    while (!gb.cpu.isHalted()) {
-        uint16_t pc = gb.cpu.regs.pc;
-        uint8_t op = gb.bus.read(pc);
-
-        std::cout << "PC=" << std::hex << pc
-            << " OP=" << (int)op << "\n";
-
-        gb.cpu.clock();
-
-        static int stepCount = 0;
-        if ((++stepCount % 1000) == 0) {
-            uint8_t div = gb.bus.read(0xFF04);
-            uint8_t tima = gb.bus.read(0xFF05);
-            uint8_t ifr = gb.bus.read(0xFF0F);
-
-            std::cout << std::hex
-                << "STEP=" << stepCount
-                << " DIV=" << (int)div
-                << " TIMA=" << (int)tima
-                << " IF=" << (int)ifr
-                << "\n";
-        }
+    if (!gb.init()) {
+        return -1;
     }
-
-    for (int i = 0; i < 350000; i++) {
-        gb.cpu.clock();
-        if (i % 50000 == 0) {
-            uint8_t div = gb.io.read(0xFF04);
-            uint8_t tima = gb.io.read(0xFF05);
-            uint8_t tma = gb.io.read(0xFF06);
-            uint8_t tac = gb.io.read(0xFF07);
-            uint8_t ifr = gb.io.read(0xFF0F);
-
-            printf(
-                "i=%d HALT=%d DIV=%02X TIMA=%02X TMA=%02X TAC=%02X IF=%02X\n",
-                i,
-                gb.cpu.isHalted(),
-                div,
-                tima,
-                tma,
-                tac,
-                ifr
-            );
-        }
+    while (true) {
+        gb.run();
     }
-
-    */
+    
 
     uint8_t div = gb.bus.read(0xFF04);
     uint8_t tima = gb.bus.read(0xFF05);

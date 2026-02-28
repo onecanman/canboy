@@ -34,6 +34,9 @@ private:
 	uint8_t tileHigh;
 	uint8_t fetcherX;
 	uint8_t pixelSkip;
+	bool wActive = false;
+	bool wUsed = false;
+	uint8_t wLine = 0;
 	std::deque<uint8_t> bgFIFO;
 	void enterMode3();
 	void tickFetcher();

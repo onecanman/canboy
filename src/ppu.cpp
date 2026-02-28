@@ -10,6 +10,9 @@ void PPU::tick() {
 		io.setLY(0);
 		io.setSTATMode(0);
 		prevMatch = false;
+		wLine = 0;
+		wActive = 0;
+		wUsed = 0;
 	}
 	if (!bit7Prev && bit7) {
 		dotcount = 0;
@@ -32,6 +35,12 @@ void PPU::tick() {
 			ly = 0;
 		}
 		io.setLY(ly);
+		uint8_t wy = io.read(IO::REG::WY);
+		if (ly < wy) {
+			wLine = 0;
+		}
+		if (wUsed) wLine++;
+		wUsed = false;
 		if (prevLY == 143 && ly == 144) {
 			io.reqINT(IO::INT::VBlank);
 		}
@@ -78,6 +87,20 @@ void PPU::tick() {
 		}
 	}
 	if (mode == 3 && ly <= 143) {
+		uint8_t lcdc = io.read(IO::REG::LCDC);
+		uint8_t wx = io.read(IO::REG::WX);
+		uint8_t wy = io.read(IO::REG::WY);
+		int16_t trigger = static_cast<int16_t>(wx) - 7;
+		if (trigger < 0) trigger = 0;
+		if (!wActive && (lcdc & 0x20) && ly >= wy && xPixel == trigger) {
+			wActive = true;
+			wUsed = true;
+			bgFIFO.clear();
+			state = FState::getTile;
+			fdotcounter = 0;
+			fetcherX = 0;
+			pixelSkip = 0;
+		}
 		tickFetcher();
 		if (!bgFIFO.empty() && xPixel < 160) {
 			uint8_t color = bgFIFO.front();
@@ -113,6 +136,7 @@ void PPU::enterMode3() {
 	xPixel = 0;
 	uint8_t scx = io.read(IO::REG::SCX);
 	pixelSkip = scx & 7;
+	wActive = false;
 }
 
 void PPU::tickFetcher() {
@@ -121,15 +145,25 @@ void PPU::tickFetcher() {
 		fdotcounter++;
 		if (fdotcounter == 2) {
 			fdotcounter = 0;
-			uint8_t scx = io.read(IO::REG::SCX);
-			uint8_t scy = io.read(IO::REG::SCY);
-			uint8_t lcdc = io.read(IO::REG::LCDC);
-			uint8_t bgY = (scy + ly) & 0xFF;
-			uint8_t tileY = bgY / 8;
-			uint8_t tileX = ((scx / 8) + fetcherX) & 31; 
-			uint16_t tileMapBase = (lcdc & 0x08) ? 0x9C00 : 0x9800;
-			uint16_t addr = tileMapBase + (tileY * 32 + tileX);
-			tileNo = io.read(addr);
+			if (wActive) {
+				uint8_t lcdc = io.read(IO::REG::LCDC);
+				uint8_t tileY = wLine / 8;
+				uint8_t tileX = fetcherX;
+				uint16_t tileMapBase = (lcdc & 0x40) ? 0x9C00 : 0x9800;
+				uint16_t addr = tileMapBase + (tileY * 32 + tileX);
+				tileNo = io.read(addr);
+			}
+			else {
+				uint8_t scx = io.read(IO::REG::SCX);
+				uint8_t scy = io.read(IO::REG::SCY);
+				uint8_t lcdc = io.read(IO::REG::LCDC);
+				uint8_t bgY = (scy + ly) & 0xFF;
+				uint8_t tileY = bgY / 8;
+				uint8_t tileX = ((scx / 8) + fetcherX) & 31;
+				uint16_t tileMapBase = (lcdc & 0x08) ? 0x9C00 : 0x9800;
+				uint16_t addr = tileMapBase + (tileY * 32 + tileX);
+				tileNo = io.read(addr);
+			}
 			state = FState::getLow;
 		}
 		break;
@@ -137,9 +171,14 @@ void PPU::tickFetcher() {
 		fdotcounter++;
 		if (fdotcounter == 2) {
 			fdotcounter = 0;
-			uint8_t scy = io.read(IO::REG::SCY);
-			uint8_t bgY = (scy + ly) & 0xFF;
-			tileRow = bgY & 0x07;
+			if (wActive) {
+				tileRow = wLine & 0x07;
+			}
+			else {
+				uint8_t scy = io.read(IO::REG::SCY);
+				uint8_t bgY = (scy + ly) & 0xFF;
+				tileRow = bgY & 0x07;
+			}
 			uint8_t lcdc = io.read(IO::REG::LCDC);
 			tileBase = (lcdc & 0x10) ? (0x8000 + tileNo * 16) : (0x9000 + static_cast<int8_t>(tileNo) * 16);
 			tileLow = io.read(tileBase + tileRow * 2);

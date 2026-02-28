@@ -82,8 +82,18 @@ void PPU::tick() {
 		if (!bgFIFO.empty() && xPixel < 160) {
 			uint8_t color = bgFIFO.front();
 			bgFIFO.pop_front();
-			framebuffer[ly * 160 + xPixel] = color;
-			xPixel++;
+			if (pixelSkip > 0) {
+				pixelSkip--;
+			}
+			else {
+				if (io.read(IO::REG::LCDC) & 0x01) {
+					framebuffer[ly * 160 + xPixel] = color;
+				}
+				else {
+					framebuffer[ly * 160 + xPixel] = 0;
+				}
+				xPixel++;
+			}
 		}
 	}
 	prevMatch = currentMatch;
@@ -101,6 +111,8 @@ void PPU::enterMode3() {
 	fdotcounter = 0;
 	fetcherX = 0;
 	xPixel = 0;
+	uint8_t scx = io.read(IO::REG::SCX);
+	pixelSkip = scx & 7;
 }
 
 void PPU::tickFetcher() {
@@ -109,11 +121,12 @@ void PPU::tickFetcher() {
 		fdotcounter++;
 		if (fdotcounter == 2) {
 			fdotcounter = 0;
+			uint8_t scx = io.read(IO::REG::SCX);
 			uint8_t scy = io.read(IO::REG::SCY);
 			uint8_t lcdc = io.read(IO::REG::LCDC);
 			uint8_t bgY = (scy + ly) & 0xFF;
 			uint8_t tileY = bgY / 8;
-			uint8_t tileX = fetcherX;
+			uint8_t tileX = ((scx / 8) + fetcherX) & 31; 
 			uint16_t tileMapBase = (lcdc & 0x08) ? 0x9C00 : 0x9800;
 			uint16_t addr = tileMapBase + (tileY * 32 + tileX);
 			tileNo = io.read(addr);

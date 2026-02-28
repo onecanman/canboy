@@ -25,6 +25,7 @@ add_executable ( canboy
     src/registers.cpp
  "include/Emu.h" "src/Emu.cpp" "include/cartridge.h" "src/cartridge.cpp" "include/io.h" "src/io.cpp" "include/timer.h" "src/timer.cpp" "include/ppu.h" "src/ppu.cpp" "include/renderer.h" "src/renderer.cpp")
 
+
 find_package(SDL3 CONFIG REQUIRED)
 target_link_libraries(canboy PRIVATE SDL3::SDL3)
 

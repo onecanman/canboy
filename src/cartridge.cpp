@@ -14,7 +14,10 @@ uint8_t Cartridge::read(uint16_t addr) {
 
 void Cartridge::write(uint16_t addr, uint8_t val) {
 	if (addr >= 0xA000 && addr <= 0xBFFF) {
-		RAM[addr - 0xA000] = val;
+        RAM[addr - 0xA000] = val;
+	}
+	else {
+		// later mbc
 	}
 }
 

@@ -10,6 +10,7 @@ public:
 	static constexpr int HEIGHT = 144;
 	bool init(const char* title, int scale);
 	void render(const std::array<uint8_t, WIDTH* HEIGHT>& framebuffer);
+	bool procEvents();
 private:
 	SDL_Window* sdlWindow = nullptr;
 	SDL_Renderer* sdlRenderer = nullptr;

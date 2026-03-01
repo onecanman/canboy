@@ -8,7 +8,10 @@ Bus::Bus() {}
 Bus::~Bus() {}
 
 void Bus::write(uint16_t addr, uint8_t data) {
-    if (addr >= 0x0000 && addr <= 0x7FFF) {
+    if (addr == 0xFF50) {
+        bootRomEnabled = false;
+    }
+    else if (addr >= 0x0000 && addr <= 0x7FFF) {
         assert(cart != nullptr);
         cart->write(addr, data);
     }
@@ -42,7 +45,10 @@ void Bus::write(uint16_t addr, uint8_t data) {
 }
 
 uint8_t Bus::read(uint16_t addr) {
-    if (addr >= 0x0000 && addr <= 0x7FFF) {
+    if (addr < 0x100 && bootRomEnabled) {
+        return bootRom[addr];
+    }
+    else if (addr >= 0x0000 && addr <= 0x7FFF) {
         assert(cart != nullptr);
         return cart->read(addr); // rom
     }
@@ -94,7 +100,7 @@ bool Bus::isDMAActive() {
     return dmaActive;
 }
 
-uint8_t Bus::dmaRead(uint16_t addr) {
+uint8_t Bus::rawRead(uint16_t addr) {
     if (addr >= 0x0000 && addr <= 0x7FFF) {
         assert(cart != nullptr);
         return cart->read(addr); // rom
@@ -117,10 +123,18 @@ uint8_t Bus::dmaRead(uint16_t addr) {
 void Bus::tickDMA() {
     dmaTicks++;
     if (dmaTicks % 4 == 0 && dmaIndex < 160) {
-        OAM[dmaIndex] = dmaRead(dmaSource + dmaIndex);
+        OAM[dmaIndex] = rawRead(dmaSource + dmaIndex);
         dmaIndex++;
     }
     if (dmaTicks == 640) {
         dmaActive = false;
     }
+}
+
+bool Bus::loadBootRom(const std::string& path) {
+    std::ifstream file(path, std::ios::binary);
+    if (!file) return false;
+
+    file.read(reinterpret_cast<char*>(bootRom.data()), 0x100);
+    return file.gcount() == 0x100;
 }

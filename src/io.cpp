@@ -25,6 +25,7 @@ uint8_t IO::read(uint16_t addr) {
 	case 0xFF43: return SCX; break;
 	case 0xFF44: return LY; break;
 	case 0xFF45: return LYC; break;
+	case 0xFF47: return BGP; break;
 	case 0xFF4A: return WY; break;
 	case 0xFF4B: return WX; break;
 	default: return 0xFF;
@@ -68,6 +69,9 @@ void IO::write(uint16_t addr, uint8_t val) {
 		break;
 	case 0xFF45:
 		LYC = val;
+		break;
+	case 0xFF47:
+		BGP = val;
 		break;
 	case 0xFF4A:
 		WY = val;

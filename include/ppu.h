@@ -4,9 +4,11 @@
 #include <deque>
 #include "io.h"
 
+class Bus;
+
 class PPU {
 public:
-	PPU(IO& io) : io(io) { io.setSTATMode(mode); }
+	PPU(IO& io, Bus *b) : io(io), bus(b){ io.setSTATMode(mode); }
 private:
 	IO& io;
 	std::array<uint8_t, 160 * 144> framebuffer{};
@@ -16,7 +18,7 @@ private:
 	bool prevMatch = false;
 	bool bit7Prev = true;
 	bool bit7 = true;
-	uint8_t xPixel;
+	uint8_t xPixel = 0;
 	enum class FState {
 		getTile,
 		getLow,
@@ -26,14 +28,14 @@ private:
 	};
 	FState state;
 	bool frameReady = false;
-	uint8_t fdotcounter;
-	uint8_t tileNo;
-	uint16_t tileBase;
-	uint8_t tileRow;
-	uint8_t tileLow;
-	uint8_t tileHigh;
-	uint8_t fetcherX;
-	uint8_t pixelSkip;
+	uint8_t fdotcounter = 0;
+	uint8_t tileNo = 0;
+	uint16_t tileBase = 0;
+	uint8_t tileRow = 0;
+	uint8_t tileLow = 0;
+	uint8_t tileHigh = 0;
+	uint8_t fetcherX = 0;
+	uint8_t pixelSkip = 0;
 	bool wActive = false;
 	bool wUsed = false;
 	uint8_t wLine = 0;
@@ -42,6 +44,7 @@ private:
 	void tickFetcher();
 
 public:
+	Bus* bus = nullptr;
 	const std::array<uint8_t, 160 * 144>& getFrameBuffer() const;
 	bool isFrameReady();
 	void clrFrameFlag();

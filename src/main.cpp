@@ -4,19 +4,14 @@
 int main() {
     Emu gb;
 
-
-    gb.cpu.regs.pc = 0x0000;
-    gb.cpu.regs.sp = 0xFFFE;
     gb.cart.loadGame("../../../../roms/Tetris (World) (Rev A).gb");
     gb.bus.attachCart(&gb.cart);
     gb.bus.attachIO(&gb.io);
 
-    std::cout << "PC before clock = "
-        << std::hex << gb.cpu.regs.pc << "\n";
-
     if (!gb.init()) {
         return -1;
     }
+    int counter = 0;
     while (true) {
         gb.run();
     }
